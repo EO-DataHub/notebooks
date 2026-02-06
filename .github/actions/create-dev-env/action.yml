@@ -4,13 +4,9 @@ description: Create a build environment
 runs:
   using: composite
   steps:
-    - name: Set Up Python 🐍
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
+    - name: Install uv 📦
+      uses: astral-sh/setup-uv@v7
 
     - name: Install Dev Dependencies 📦
-      run: |
-        pip install --upgrade pip
-        pip install --upgrade -r requirements-dev.txt
+      run: uv sync --frozen
       shell: bash

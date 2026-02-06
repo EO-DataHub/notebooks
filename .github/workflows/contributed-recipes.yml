@@ -26,7 +26,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout Repo ⚡️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Calculate recipes matrix 🛠
         id: set-matrix
@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout Repo ⚡️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build recipe 🛠
         run: docker build --pull --rm --force-rm --tag my-custom-image -f ./${{ matrix.dockerfile }} ./

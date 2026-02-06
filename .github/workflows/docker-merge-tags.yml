@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout Repo ⚡️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Create dev environment 📦
         uses: ./.github/actions/create-dev-env
 
@@ -62,5 +62,5 @@ jobs:
 
       - name: Merge tags for the images 🔀
         if: env.PUSH_TO_REGISTRY == 'true'
-        run: python3 -m tagging.merge_tags --short-image-name ${{ inputs.image }} --tags-dir /tmp/jupyter/tags/ --variant ${{ inputs.variant }}
+        run: uv run --no-sync python -m tagging.merge_tags --short-image-name ${{ inputs.image }} --tags-dir /tmp/jupyter/tags/ --variant ${{ inputs.variant }}
         shell: bash

@@ -1,0 +1,59 @@
+[project]
+name = "notebooks"
+version = "0.0.0"
+description = "Jupyter Docker Stacks - EO-DataHub fork"
+requires-python = ">=3.13,<3.14"
+
+[dependency-groups]
+dev = [
+    "docker",
+    "plumbum",
+    "pre-commit",
+    "pyright",
+    "pytest",
+    "pytest-mock",
+    "pytest-retry",
+    "pytest-watcher",
+    "pytest-xdist",
+    "python-dateutil",
+    "requests",
+    "ruff",
+    "tabulate",
+    "validate-pyproject",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 119
+extend-exclude = ["images", "binder", "docs", "examples", "tagging", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # Pycodestyle errors
+    "W",    # Pycodestyle warnings
+    "F",    # Pyflakes
+    "I",    # isort
+    "RUF",  # RUF-specific rules
+    "SIM",  # Simplifications
+    "B",    # Bugbear
+    "ANN",  # Annotations
+    "PLC",  # Pylint convention
+    "PLE",  # Pylint errors
+    "UP",   # pyupgrade
+    "FURB", # refurb
+    "PT",   # pytest
+]
+ignore = [
+    "E501",   # line too long
+    "SIM108", # ternary operator
+    "SIM103", # return bool directly
+]
+
+[tool.pyright]
+exclude = [".venv", "images", "binder", "docs", "examples", "tagging", "tests"]

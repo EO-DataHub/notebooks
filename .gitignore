@@ -187,3 +187,6 @@ cython_debug/
 
 # PyCharm project configuration
 .idea/
+
+# Pre-commit config (downloaded at setup time)
+.pre-commit-config.yaml

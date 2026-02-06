@@ -30,7 +30,8 @@ on:
       - "!tagging/README.md"
       - "tests/**"
       - "!tests/README.md"
-      - "requirements-dev.txt"
+      - "pyproject.toml"
+      - "uv.lock"
   push:
     branches:
       - main
@@ -50,7 +51,8 @@ on:
       - "!tagging/README.md"
       - "tests/**"
       - "!tests/README.md"
-      - "requirements-dev.txt"
+      - "pyproject.toml"
+      - "uv.lock"
   workflow_dispatch:
 
 # https://docs.github.com/en/actions/using-jobs/using-concurrency

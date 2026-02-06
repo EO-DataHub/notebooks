@@ -5,6 +5,7 @@
 SHELL:=bash
 REGISTRY?=quay.io
 OWNER?=jupyter
+uv-run ?= uv run --no-sync
 
 # Enable BuildKit for Docker build
 export DOCKER_BUILDKIT:=1
@@ -54,7 +55,7 @@ build-all: $(foreach I, $(ALL_IMAGES), build/$(I)) ## build all stacks
 
 
 check-outdated/%: ## check the outdated mamba/conda packages in a stack and produce a report
-	@TEST_IMAGE="$(REGISTRY)/$(OWNER)/$(notdir $@)" pytest tests/docker-stacks-foundation/test_outdated.py
+	@TEST_IMAGE="$(REGISTRY)/$(OWNER)/$(notdir $@)" ${uv-run} pytest tests/docker-stacks-foundation/test_outdated.py
 check-outdated-all: $(foreach I, $(ALL_IMAGES), check-outdated/$(I)) ## check all the stacks for outdated packages
 
 
@@ -70,28 +71,28 @@ cont-clean-all: cont-stop-all cont-rm-all ## clean all containers (stop + rm)
 
 
 docs: ## build HTML documentation
-	sphinx-build -W --keep-going --color docs/ docs/_build/
+	${uv-run} sphinx-build -W --keep-going --color docs/ docs/_build/
 linkcheck-docs: ## check broken links
-	sphinx-build -W --keep-going --color -b linkcheck docs/ docs/_build/
+	${uv-run} sphinx-build -W --keep-going --color -b linkcheck docs/ docs/_build/
 
 
 
 hook/%: VARIANT?=default
 hook/%: ## run post-build hooks for an image
-	python3 -m tagging.write_tags_file \
+	${uv-run} python -m tagging.write_tags_file \
 	  --short-image-name "$(notdir $@)" \
 	  --tags-dir /tmp/jupyter/tags/ \
 	  --registry "$(REGISTRY)" \
 	  --owner "$(OWNER)" \
 	  --variant "$(VARIANT)"
-	python3 -m tagging.write_manifest \
+	${uv-run} python -m tagging.write_manifest \
 	  --short-image-name "$(notdir $@)" \
 	  --hist-lines-dir /tmp/jupyter/hist_lines/ \
 	  --manifests-dir /tmp/jupyter/manifests/ \
 	  --registry "$(REGISTRY)" \
 	  --owner "$(OWNER)" \
 	  --variant "$(VARIANT)"
-	python3 -m tagging.apply_tags \
+	${uv-run} python -m tagging.apply_tags \
 	  --short-image-name "$(notdir $@)" \
 	  --tags-dir /tmp/jupyter/tags/ \
 	  --platform "$(shell uname -m)" \
@@ -134,8 +135,44 @@ run-sudo-shell/%: ## run bash in interactive mode as root in a stack
 
 
 test/%: ## run tests against a stack
-	python3 -m tests.run_tests \
+	${uv-run} python -m tests.run_tests \
 	  --short-image-name "$(notdir $@)" \
 	  --registry "$(REGISTRY)" \
 	  --owner "$(OWNER)"
 test-all: $(foreach I, $(ALL_IMAGES), test/$(I)) ## test all stacks
+
+
+.git/hooks/pre-commit:
+	${uv-run} pre-commit install
+	curl -o .pre-commit-config.yaml https://raw.githubusercontent.com/EO-DataHub/github-actions/main/.pre-commit-config-python.yaml
+
+.PHONY: setup
+setup: update .git/hooks/pre-commit
+
+.PHONY: pre-commit
+pre-commit:
+	${uv-run} pre-commit
+
+.PHONY: pre-commit-all
+pre-commit-all:
+	${uv-run} pre-commit run --all-files
+
+.PHONY: check
+check:
+	${uv-run} ruff check
+	${uv-run} ruff format --check --diff
+	${uv-run} pyright
+	${uv-run} validate-pyproject pyproject.toml
+
+.PHONY: format
+format:
+	${uv-run} ruff check --fix
+	${uv-run} ruff format
+
+.PHONY: install
+install:
+	uv sync --frozen
+
+.PHONY: update
+update:
+	uv sync

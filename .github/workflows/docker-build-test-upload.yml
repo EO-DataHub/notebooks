@@ -53,7 +53,7 @@ jobs:
           swap-storage: false
 
       - name: Checkout Repo ⚡️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Create dev environment 📦
         uses: ./.github/actions/create-dev-env
 
@@ -79,12 +79,12 @@ jobs:
         shell: bash
 
       - name: Run tests ✅
-        run: python3 -m tests.run_tests --short-image-name ${{ inputs.image }} --registry ${{ env.REGISTRY }} --owner ${{ env.OWNER }}
+        run: uv run --no-sync python -m tests.run_tests --short-image-name ${{ inputs.image }} --registry ${{ env.REGISTRY }} --owner ${{ env.OWNER }}
         shell: bash
 
       - name: Write tags file 🏷
         run: |
-          python3 -m tagging.write_tags_file --short-image-name ${{ inputs.image }} --tags-dir /tmp/jupyter/tags/ --registry ${{ env.REGISTRY }} --owner ${{ env.OWNER }} --variant ${{ inputs.variant }}
+          uv run --no-sync python -m tagging.write_tags_file --short-image-name ${{ inputs.image }} --tags-dir /tmp/jupyter/tags/ --registry ${{ env.REGISTRY }} --owner ${{ env.OWNER }} --variant ${{ inputs.variant }}
         shell: bash
       - name: Upload tags file 💾
         uses: actions/upload-artifact@v4
@@ -94,7 +94,7 @@ jobs:
           retention-days: 3
 
       - name: Write manifest and build history file 🏷
-        run: python3 -m tagging.write_manifest --short-image-name ${{ inputs.image }} --hist-lines-dir /tmp/jupyter/hist_lines/ --manifests-dir /tmp/jupyter/manifests/ --registry ${{ env.REGISTRY }} --owner ${{ env.OWNER }} --variant ${{ inputs.variant }}
+        run: uv run --no-sync python -m tagging.write_manifest --short-image-name ${{ inputs.image }} --hist-lines-dir /tmp/jupyter/hist_lines/ --manifests-dir /tmp/jupyter/manifests/ --registry ${{ env.REGISTRY }} --owner ${{ env.OWNER }} --variant ${{ inputs.variant }}
         shell: bash
       - name: Upload manifest file 💾
         uses: actions/upload-artifact@v4
