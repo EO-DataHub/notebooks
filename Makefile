@@ -71,9 +71,9 @@ cont-clean-all: cont-stop-all cont-rm-all ## clean all containers (stop + rm)
 
 
 docs: ## build HTML documentation
-	${uv-run} sphinx-build -W --keep-going --color docs/ docs/_build/
+	uv run --no-sync --group docs sphinx-build -W --keep-going --color docs/ docs/_build/
 linkcheck-docs: ## check broken links
-	${uv-run} sphinx-build -W --keep-going --color -b linkcheck docs/ docs/_build/
+	uv run --no-sync --group docs sphinx-build -W --keep-going --color -b linkcheck docs/ docs/_build/
 
 
 
